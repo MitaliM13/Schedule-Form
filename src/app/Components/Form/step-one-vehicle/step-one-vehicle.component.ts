@@ -2,6 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from 'src/app/Service/data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { StepTwoDateComponent } from '../step-two-date/step-two-date.component';
 
 @Component({
   selector: 'app-step-one-vehicle',
@@ -18,12 +20,14 @@ export class StepOneVehicleComponent implements OnInit {
   buttonValue: string = '+Add';
   vehicleReport: FormGroup;
   branches: string[] = ['Branch 1', 'Branch 2', 'Branch 3'];
+  searchTerm = ""
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder,
     private dataService: DataService,
-    private dialogRef: MatDialogRef<StepOneVehicleComponent>
+    private dialogRef: MatDialogRef<StepOneVehicleComponent>,
+    private dialog: MatDialog
   ) {
     this.vehicleReport = this.fb.group({
       fleet: [true],
@@ -82,8 +86,6 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   onNext(): void {
-    if (this.vehicleReport.valid) {
-      this.dialogRef.close(this.vehicleReport.value);
-    }
+    this.dialog.open(StepTwoDateComponent)
   }
 }

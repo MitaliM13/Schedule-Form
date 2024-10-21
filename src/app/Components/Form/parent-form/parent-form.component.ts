@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/Service/data.service';
 import { MatDialog } from '@angular/material/dialog';
-import { StepOneVehicleComponent } from './step-one-vehicle/step-one-vehicle.component';
-import { StepTwoDateComponent } from './step-two-date/step-two-date.component';
+import { StepOneVehicleComponent } from '../step-one-vehicle/step-one-vehicle.component';
+import { StepTwoDateComponent } from '../step-two-date/step-two-date.component';
 
 @Component({
   selector: 'app-parent-form',
@@ -38,26 +38,26 @@ export class ParentFormComponent implements OnInit {
     this.dialog.open(StepOneVehicleComponent).afterClosed().subscribe(result => {
       if (result) {
         this.currentStep = 2; // Move to the next step after closing the first dialog
-        this.openSpecificDialog();
+        // this.openSpecificDialog();
       }
     });
   }
 
-  openSpecificDialog(): void {
-    if (this.currentStep === 1) {
-      this.dialog.open(StepOneVehicleComponent).afterClosed().subscribe(result => {
-        if (result) {
-          this.currentStep = 2; // Move to the next step after closing the first dialog
-          this.openSpecificDialog();
-        }
-      });
-    } else if (this.currentStep === 2) {
-      this.dialog.open(StepTwoDateComponent).afterClosed().subscribe(result => {
-        if (result) {
-          console.log('Form submitted with data:', result);
-          // You can continue to the next step or submit the final form
-        }
-      });
-    }
-  }
+  // openSpecificDialog(): void {
+  //   if (this.currentStep === 1) {
+  //     this.dialog.open(StepOneVehicleComponent).afterClosed().subscribe(result => {
+  //       if (result) {
+  //         this.currentStep = 2; // Move to the next step after closing the first dialog
+  //         this.openSpecificDialog();
+  //       }
+  //     });
+  //   } else if (this.currentStep === 2) {
+  //     this.dialog.open(StepTwoDateComponent).afterClosed().subscribe(result => {
+  //       if (result) {
+  //         console.log('Form submitted with data:', result);
+  //         // You can continue to the next step or submit the final form
+  //       }
+  //     });
+  //   }
+  // }
 }
