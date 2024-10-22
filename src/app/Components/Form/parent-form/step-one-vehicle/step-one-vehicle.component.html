@@ -45,13 +45,37 @@
       <section class="email-section">
         <div class="email-container">
           <h4>Enter email ids</h4>
+          
           <div class="email-input-container" *ngIf="isButtonVisible">
             <input type="email" formControlName="email" placeholder="Enter email" />
-            <button class="add-email-button" [disabled]="!reportForm.get('email')?.valid || emails.length >= 5" (click)="addEmail()">Add</button>
+            
+            <!-- Validation messages -->
+            <div *ngIf="reportForm.get('email')?.invalid && reportForm.get('email')?.touched" class="error-messages">
+              <span *ngIf="reportForm.get('email')?.hasError('required')">Email is required.</span>
+              <span *ngIf="reportForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
+            </div>
+      
+            <button class="add-email-button" 
+                    [disabled]="!reportForm.get('email')?.valid || emails.length >= 5" 
+                    (click)="addEmail()">Add</button>
+          </div>
+      
+          <!-- Display added emails -->
+          <div *ngIf="emails.length > 0">
+            <h5>Added Emails:</h5>
+            <ul>
+              <li *ngFor="let email of emails; let i = index">
+                {{ email }} <button (click)="removeEmail(i)">Remove</button>
+              </li>
+            </ul>
           </div>
         </div>
-        <button class="add-email-button" [disabled]="emails.length >= 5" (click)="onButtonClickVisible()">{{ buttonValue }}</button>
+      
+        <button class="add-email-button" 
+                [disabled]="emails.length >= 5" 
+                (click)="onButtonClickVisible()">{{ buttonValue }}</button>
       </section>
+      
     </div> <!-- Closing formGroup div -->
   
     <!-- Email list display -->

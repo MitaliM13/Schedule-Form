@@ -1,7 +1,7 @@
 <div class="schedule-reports-modal">
     <h2 mat-dialog-title>Schedule Reports 
-        <button mat-icon-button class="edit-button">
-            <mat-icon>edit</mat-icon>
+        <button mat-icon-button class="edit-button" (click)="toggleEdit()">
+            <mat-icon>{{ isEditMode ? 'check' : 'edit' }}</mat-icon>
         </button>
     </h2>
     <mat-dialog-content>
@@ -9,7 +9,7 @@
             <div class="form-row">
                 <label>Report Types</label>
                 <mat-form-field>
-                    <input matInput formControlName="reportTypes">
+                    <input matInput formControlName="reportTypes"  [disabled]="!isEditMode">
                 </mat-form-field>
             </div>
             <div class="form-row">

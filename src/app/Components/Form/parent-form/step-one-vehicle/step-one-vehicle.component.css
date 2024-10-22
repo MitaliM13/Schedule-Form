@@ -198,3 +198,12 @@ input{
 }
 
 
+.error-messages {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.email-input-container {
+  margin-bottom: 15px;
+}

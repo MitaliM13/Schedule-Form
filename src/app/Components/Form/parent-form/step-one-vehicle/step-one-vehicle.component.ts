@@ -57,8 +57,9 @@ export class StepOneVehicleComponent implements OnInit {
       console.log('Branch selection changed:', value);
       this.filteredVehicleList();
     });
-
   }
+
+  
 
   filteredVehicleList(): void {
     console.log('Vehicles for filtering:', this.vehicles);  // Check vehicle structure
@@ -69,7 +70,7 @@ export class StepOneVehicleComponent implements OnInit {
     this.filteredVehicles = this.vehicles.filter(vehicle => {
       console.log('Vehicle object:', vehicle);  // Check vehicle properties
       const matchesBranch = branch === 'All Vehicles' || vehicle.branch.toLowerCase() === branch.toLowerCase();
-      const matchesSearch = !vehicleSearch || vehicle.registration_number.toLowerCase().includes(vehicleSearch);
+      const matchesSearch = !vehicleSearch || vehicle.branch.toLowerCase().includes(vehicleSearch);
       return matchesBranch && matchesSearch;
     });
   }
@@ -101,6 +102,7 @@ export class StepOneVehicleComponent implements OnInit {
     if (emailControl?.valid && this.emails.length < 5) {
       this.emails.push(emailControl.value);
       emailControl.reset();
+      emailControl.markAsUntouched(); 
     }
   }
 
@@ -111,7 +113,10 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   isNextButtonEnabled(): boolean {
+    console.log(this.emails.length);
+    
     return this.reportForm.valid && this.emails.length > 0;
+    
   }
 
   onNext(): void {

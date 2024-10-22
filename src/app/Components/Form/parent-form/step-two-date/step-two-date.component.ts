@@ -10,6 +10,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class StepTwoDateComponent implements OnInit {
 
   scheduleForm: FormGroup;
+  isEditMode:boolean = false
+
   minDate: Date;
   today: Date = new Date();
   timeIntervals = ['Weekly', 'Every 2 weeks', 'Monthly', 'Quarterly', 'Yearly'];
@@ -54,11 +56,23 @@ export class StepTwoDateComponent implements OnInit {
             reportTypes: data.reportType
         });
     }
+    
     if (stepOneData) {
       const data = JSON.parse(stepOneData);
       // ... (populate form)
       localStorage.removeItem('stepOneData'); // Clear local storage after use
   }
+  }
+
+  toggleEdit(): void {
+    this.isEditMode = !this.isEditMode;  // Toggle the edit mode
+
+    if (!this.isEditMode) {
+      // Optionally handle form submission or validation
+      if (this.scheduleForm.valid) {
+        this.dialogRef.close(this.scheduleForm.value);
+      }
+    }
   }
 
   onCancel(): void {
