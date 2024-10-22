@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-step-two-date',
   templateUrl: './step-two-date.component.html',
   styleUrls: ['./step-two-date.component.css']
-}) 
-export class StepTwoDateComponent implements OnInit{
+})
+export class StepTwoDateComponent implements OnInit {
 
   scheduleForm: FormGroup;
+  minDate: Date;
   today: Date = new Date();
   timeIntervals = ['Weekly', 'Every 2 weeks', 'Monthly', 'Quarterly', 'Yearly'];
   weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   monthDays = Array.from({ length: 28 }, (_, i) => i + 1);
   quarterlyOptions = ['Last day of the completed quarter', 'First day of the next quarter', 'Custom'];
   yearlyOptions = ['Last day of the year', 'First day of the next year', 'Custom'];
-  minDate: Date;
-  
+  timeFormat: string = 'AM';
+
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<StepTwoDateComponent>
@@ -43,7 +42,24 @@ export class StepTwoDateComponent implements OnInit{
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const stepOneData = localStorage.getItem('stepOneData');
+    if (stepOneData) {
+        const data = JSON.parse(stepOneData);
+
+        // Populate the scheduleForm with the retrieved data
+        this.scheduleForm.patchValue({
+            vehicles: data.selectedVehicles.join(', '), // Convert array to a string for display
+            mailedTo: data.email.join(', '), 
+            reportTypes: data.reportType
+        });
+    }
+    if (stepOneData) {
+      const data = JSON.parse(stepOneData);
+      // ... (populate form)
+      localStorage.removeItem('stepOneData'); // Clear local storage after use
+  }
+  }
 
   onCancel(): void {
     this.dialogRef.close();
@@ -56,22 +72,56 @@ export class StepTwoDateComponent implements OnInit{
   }
 
   incrementTime(): void {
-    const currentTime = this.scheduleForm.get('setTime')?.value;
-    const [hours, minutes] = currentTime.split(':').map(Number);
-    const newDate = new Date(2023, 0, 1, hours, minutes);
+    let currentTime = this.scheduleForm.get('setTime')?.value;
+    let timeFormat = this.scheduleForm.get('timeFormat')?.value;
+
+    let [hours, minutes] = currentTime.split(':').map(Number);
+    if (timeFormat === 'PM' && hours < 12) {
+      hours += 12;
+    } else if (timeFormat === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    let newDate = new Date(2023, 0, 1, hours, minutes);
     newDate.setMinutes(newDate.getMinutes() + 1);
-    this.scheduleForm.patchValue({
-      setTime: `${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}`
-    });
+
+    this.updateTime(newDate);
   }
 
   decrementTime(): void {
-    const currentTime = this.scheduleForm.get('setTime')?.value;
-    const [hours, minutes] = currentTime.split(':').map(Number);
-    const newDate = new Date(2023, 0, 1, hours, minutes);
+    let currentTime = this.scheduleForm.get('setTime')?.value;
+    let timeFormat = this.scheduleForm.get('timeFormat')?.value;
+
+    let [hours, minutes] = currentTime.split(':').map(Number);
+    if (timeFormat === 'PM' && hours < 12) {
+      hours += 12;
+    } else if (timeFormat === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    let newDate = new Date(2023, 0, 1, hours, minutes);
     newDate.setMinutes(newDate.getMinutes() - 1);
+
+    this.updateTime(newDate);
+  }
+
+  updateTime(newDate: Date): void {
+    let newHours = newDate.getHours();
+    let newMinutes = newDate.getMinutes();
+    let newTimeFormat = 'AM';
+
+    if (newHours >= 12) {
+      newTimeFormat = 'PM';
+      if (newHours > 12) {
+        newHours -= 12;
+      }
+    } else if (newHours === 0) {
+      newHours = 12; 
+    }
+
     this.scheduleForm.patchValue({
-      setTime: `${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}`
+      setTime: `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`,
+      timeFormat: newTimeFormat
     });
   }
 }

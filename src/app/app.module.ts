@@ -27,6 +27,11 @@ import { NgArrayPipesModule } from 'ngx-pipes';
 import {MatRadioModule} from '@angular/material/radio'
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatNativeDateModule,
+  NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker'
 
 @NgModule({
   declarations: [
@@ -58,7 +63,10 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     FormsModule,
     MatRadioModule,
     MatButtonToggleModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    NgxMatDatetimePickerModule,
+    NgxMatTimepickerModule,
+    NgxMatNativeDateModule
   ],
   exports: [MatStepperModule],
   providers: [DataService],

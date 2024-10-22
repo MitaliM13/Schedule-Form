@@ -119,6 +119,21 @@ export class StepOneVehicleComponent implements OnInit {
       console.log('Proceeding to the next step with form data:', this.reportForm.value);
       console.log('Selected emails:', this.emails);
       console.log('Selected vehicles:', this.selectedVehicles);
+
+      const formData = {
+        fleet: this.reportForm.get('fleet')?.value,
+        vehicle: this.reportForm.get('vehicle')?.value,
+        trip: this.reportForm.get('trip')?.value,
+        driving: this.reportForm.get('driving')?.value,
+        email: this.emails,
+        vehicleSearch: this.reportForm.get('vehicleSearch')?.value,
+        branch: this.reportForm.get('branch')?.value,
+        selectedVehicles: this.selectedVehicles,
+        reportType: this.reportForm.get('reportType')?.value 
+    };
+
+    localStorage.setItem('stepOneData', JSON.stringify(formData));
+
       this.modalService.stepTwoFortm();
       this.dialogRef.close();
     }
