@@ -50,10 +50,16 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   filterVehicles(): void {
-    this.filteredVehicles = this.selectedBranch === 'all' ? this.vehicles : 
-      this.vehicles.filter(vehicle => vehicle.branch === this.selectedBranch);
+    this.filteredVehicles = this.vehicles.filter(vehicle => {
+      const matchesBranch = this.selectedBranch === 'all' || vehicle.branch === this.selectedBranch;
+      const matchesSearchTerm = vehicle.vin.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                                 vehicle.registration_number.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                                 vehicle.lob_name.toLowerCase().includes(this.searchTerm.toLowerCase());
+      return matchesBranch && matchesSearchTerm;
+    });
     this.showVehicleList = this.filteredVehicles.length > 0;
   }
+  
 
   onButtonClickVisible(): void {
     this.isButtonVisible = !this.isButtonVisible;
