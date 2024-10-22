@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/Service/data.service';
 import { MatDialog } from '@angular/material/dialog';
-import { StepOneVehicleComponent } from '../step-one-vehicle/step-one-vehicle.component';
-import { StepTwoDateComponent } from '../step-two-date/step-two-date.component';
+import { ModalService } from 'src/app/Service/modal.service';
+import { StepOneVehicleComponent } from './step-one-vehicle/step-one-vehicle.component';
+import { StepTwoDateComponent } from './step-two-date/step-two-date.component';
 
 @Component({
   selector: 'app-parent-form',
@@ -14,10 +15,15 @@ export class ParentFormComponent implements OnInit {
   errorMessage: string = '';
   currentStep: number = 1;
 
-  constructor(private dataService: DataService, private dialog: MatDialog) {}
+  constructor(private dataService: DataService, private dialog: MatDialog, private modal: ModalService) {}
 
   ngOnInit(): void {
     this.fetchData();
+
+    this.modal.currentStep$.subscribe(step => {
+      this.currentStep = step
+      this.openDialog(step)
+    })
   }
 
   fetchData(): void {
@@ -33,31 +39,11 @@ export class ParentFormComponent implements OnInit {
     );
   }
 
-  openDialog(): void {
-    // Opens the first step of the form
-    this.dialog.open(StepOneVehicleComponent).afterClosed().subscribe(result => {
-      if (result) {
-        this.currentStep = 2; // Move to the next step after closing the first dialog
-        // this.openSpecificDialog();
-      }
-    });
+  openDialog(step: number) {
+    if(step === 1){
+      this.dialog.open(StepOneVehicleComponent)
+    } else if (step === 2){
+      this.dialog.open(StepTwoDateComponent)
+    }
   }
-
-  // openSpecificDialog(): void {
-  //   if (this.currentStep === 1) {
-  //     this.dialog.open(StepOneVehicleComponent).afterClosed().subscribe(result => {
-  //       if (result) {
-  //         this.currentStep = 2; // Move to the next step after closing the first dialog
-  //         this.openSpecificDialog();
-  //       }
-  //     });
-  //   } else if (this.currentStep === 2) {
-  //     this.dialog.open(StepTwoDateComponent).afterClosed().subscribe(result => {
-  //       if (result) {
-  //         console.log('Form submitted with data:', result);
-  //         // You can continue to the next step or submit the final form
-  //       }
-  //     });
-  //   }
-  // }
 }

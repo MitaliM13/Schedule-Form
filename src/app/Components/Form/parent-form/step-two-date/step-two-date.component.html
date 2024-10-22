@@ -1,0 +1,98 @@
+<div class="schedule-reports-modal">
+    <h2 mat-dialog-title>Schedule Reports <button mat-icon-button class="edit-button"><mat-icon>edit</mat-icon></button>
+    </h2>
+    <mat-dialog-content>
+        <form [formGroup]="scheduleForm">
+            <div class="form-row">
+                <label>Report Types</label>
+                <mat-form-field>
+                    <input matInput formControlName="reportTypes">
+                </mat-form-field>
+            </div>
+            <div class="form-row">
+                <label>Vehicles</label>
+                <mat-form-field>
+                    <input matInput formControlName="vehicles" >
+                </mat-form-field>
+            </div>
+            <div class="form-row">
+                <label>Mailed to</label>
+                <mat-form-field>
+                    <input matInput formControlName="mailedTo">
+                </mat-form-field>
+            </div>
+            <div class="form-row time-row">
+                <label>Set Time</label>
+                <div class="time-input">
+                    <button mat-icon-button (click)="incrementTime()"><mat-icon>arrow_drop_up</mat-icon></button>
+                    <input matInput formControlName="setTime" type="time">
+                    <button mat-icon-button (click)="decrementTime()"><mat-icon>arrow_drop_down</mat-icon></button>
+                </div>
+                <mat-button-toggle-group formControlName="timeFormat">
+                    <mat-button-toggle value="AM">AM</mat-button-toggle>
+                    <mat-button-toggle value="PM">PM</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <div class="form-row">
+                <label>Select Time Interval</label>
+                <mat-slide-toggle formControlName="skipWeekends">Skip Weekends</mat-slide-toggle>
+            </div>
+            <mat-radio-group formControlName="timeInterval" class="time-interval-group">
+                <mat-radio-button *ngFor="let interval of timeIntervals"
+                    [value]="interval">{{interval}}</mat-radio-button>
+            </mat-radio-group>
+
+            <ng-container [ngSwitch]="scheduleForm.get('timeInterval')?.value">
+                <div *ngSwitchCase="'Weekly'" class="weekday-selector">
+                    <button mat-button *ngFor="let day of weekDays"
+                        [class.selected]="scheduleForm.get('weeklyDay')?.value === day"
+                        (click)="scheduleForm.patchValue({weeklyDay: day})">
+                        {{day}}
+                    </button>
+                </div>
+                <div *ngSwitchCase="'Every 2 weeks'" class="weekday-selector">
+                    <button mat-button *ngFor="let day of weekDays"
+                        [class.selected]="scheduleForm.get('weeklyDay')?.value === day"
+                        (click)="scheduleForm.patchValue({weeklyDay: day})">
+                        {{day}}
+                    </button>
+                </div>
+                <div *ngSwitchCase="'Monthly'" class="monthly-selector">
+                    <button mat-button *ngFor="let day of monthDays"
+                        [class.selected]="scheduleForm.get('monthlyDay')?.value === day"
+                        (click)="scheduleForm.patchValue({monthlyDay: day})">
+                        {{day}}
+                    </button>
+                </div>
+                <div *ngSwitchCase="'Quarterly'" class="quarterly-selector">
+                    <mat-radio-group formControlName="quarterlyOption">
+                        <mat-radio-button *ngFor="let option of quarterlyOptions"
+                            [value]="option">{{option}}</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-form-field *ngIf="scheduleForm.get('quarterlyOption')?.value === 'Custom'">
+                        <input matInput [matDatepicker]="quarterlyPicker" formControlName="customDate"
+                            placeholder="Choose a date">
+                        <mat-datepicker-toggle matSuffix [for]="quarterlyPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #quarterlyPicker [startAt]="today"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div *ngSwitchCase="'Yearly'" class="yearly-selector">
+                    <mat-radio-group formControlName="yearlyOption">
+                        <mat-radio-button *ngFor="let option of yearlyOptions"
+                            [value]="option">{{option}}</mat-radio-button>
+                    </mat-radio-group>
+                    <mat-form-field *ngIf="scheduleForm.get('yearlyOption')?.value === 'Custom'">
+                        <input matInput [matDatepicker]="yearlyPicker" formControlName="customDate"
+                            placeholder="Choose a date">
+                        <mat-datepicker-toggle matSuffix [for]="yearlyPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #yearlyPicker [startAt]="today"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="onDone()">Done</button>
+    </mat-dialog-actions>
+</div>
