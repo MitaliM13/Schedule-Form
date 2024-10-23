@@ -32,6 +32,7 @@ import {
   NgxMatNativeDateModule,
   NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker'
+import { CommonModule } from '@angular/common'; 
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import {
     MatSlideToggleModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
-    NgxMatNativeDateModule
+    NgxMatNativeDateModule,
+    CommonModule
   ],
   exports: [MatStepperModule],
   providers: [DataService],

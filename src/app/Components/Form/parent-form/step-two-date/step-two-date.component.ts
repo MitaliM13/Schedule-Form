@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ModalService } from 'src/app/Service/modal.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-step-two-date',
@@ -23,7 +25,9 @@ export class StepTwoDateComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<StepTwoDateComponent>
+    public dialogRef: MatDialogRef<StepTwoDateComponent>,
+    private modal: ModalService,
+    private router: Router
   ) {
     const currentDate = new Date();
     this.minDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
@@ -75,11 +79,22 @@ export class StepTwoDateComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onDone(): void {
+  onNext(): void {
     if (this.scheduleForm.valid) {
-      this.dialogRef.close(this.scheduleForm.value);
+      // Save the Step 2 form data to local storage
+      localStorage.setItem('stepTwoData', JSON.stringify(this.scheduleForm.value));
+  
+      // Move to the next step
+      this.modal.stepTwoFortm();
+  
+      // Navigate to Step 3
+      this.dialogRef.close(); // Close the dialog/modal if you are using one
+  
+      // Use Angular Router to navigate to Step 3
+      this.router.navigate(['/step-three']); // Import and inject Router in the constructor
     }
   }
+  
 
   incrementTime(): void {
     let currentTime = this.scheduleForm.get('setTime')?.value;

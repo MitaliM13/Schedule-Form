@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ModalService {
 
-  private step = new BehaviorSubject<number>(1)
+  public step = new BehaviorSubject<number>(1)
   currentStep$ = this.step.asObservable()
 
   stepTwoFortm(){

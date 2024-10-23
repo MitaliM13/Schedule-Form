@@ -1,1 +1,20 @@
-<p>step-three-confirm works!</p>
+<div class="confirmation-container">
+    <h2>Confirmation</h2>
+    <h3>Step One Data</h3>
+    <div *ngIf="stepOneData">
+      <p><strong>Selected Vehicles:</strong> {{ stepOneData.selectedVehicles.join(', ') }}</p>
+      <p><strong>Emails:</strong> {{ stepOneData.email.join(', ') }}</p>
+      <p><strong>Report Types:</strong> {{ stepOneData.reportTypes.join(', ') }}</p>
+    </div>
+  
+    <h3>Step Two Data</h3>
+    <div *ngIf="stepTwoData">
+      <p><strong>Time to Set:</strong> {{ stepTwoData.setTime }} {{ stepTwoData.timeFormat }}</p>
+      <p><strong>Time Interval:</strong> {{ stepTwoData.timeInterval }}</p>
+      <p><strong>Skip Weekends:</strong> {{ stepTwoData.skipWeekends ? 'Yes' : 'No' }}</p>
+      <p><strong>Custom Date:</strong> {{ stepTwoData.customDate }}</p>
+    </div>
+  
+    <button mat-button (click)="onConfirm()">Confirm</button>
+  </div>
+  
