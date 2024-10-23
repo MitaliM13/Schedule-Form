@@ -5,22 +5,22 @@
   justify-content: flex-start;
   position: relative;
   padding: 20px;
-  /* width: 565px;
-  height: 514px;*/
-  max-height: 950px; 
+  max-height: 80vh; 
   max-width: 530px;
   border-radius: 10px;
-  overflow-y: scroll !important;
+  overflow-y: auto; /* Allow vertical scrolling */
   white-space: nowrap;
-  
+  scroll-behavior: smooth; /* Optional for smooth scrolling */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 #formDiv{
   width: 100%;
 }
 .heading{
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
 h3{
@@ -45,6 +45,7 @@ h4,p{
 
 .email-container{
   margin: 0;
+  margin-top: 20px;
 }
 
 .email-input-container {
@@ -123,7 +124,7 @@ input{
 .button-container {
   margin-top: 20px;
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
   width: 485px;
   gap: 10px;
 }

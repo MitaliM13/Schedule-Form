@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class StepTwoDateComponent implements OnInit {
 
   scheduleForm: FormGroup;
-  isEditMode:boolean = false
+  isEditMode: boolean = false;
 
   minDate: Date;
   today: Date = new Date();
@@ -47,25 +47,21 @@ export class StepTwoDateComponent implements OnInit {
   ngOnInit(): void {
     const stepOneData = localStorage.getItem('stepOneData');
     if (stepOneData) {
-        const data = JSON.parse(stepOneData);
-
-        // Populate the scheduleForm with the retrieved data
-        this.scheduleForm.patchValue({
-            vehicles: data.selectedVehicles.join(', '), // Convert array to a string for display
-            mailedTo: data.email.join(', '), 
-            reportTypes: data.reportType
-        });
-    }
-    
-    if (stepOneData) {
       const data = JSON.parse(stepOneData);
-      // ... (populate form)
+
+      // Populate the scheduleForm with the retrieved data
+      this.scheduleForm.patchValue({
+        vehicles: data.selectedVehicles.join(', '), // Convert array to a string for display
+        mailedTo: data.email.join(', '),
+        reportTypes: data.reportTypes.join(', ') // Display selected report types
+      });
+
       localStorage.removeItem('stepOneData'); // Clear local storage after use
-  }
+    }
   }
 
   toggleEdit(): void {
-    this.isEditMode = !this.isEditMode;  // Toggle the edit mode
+    this.isEditMode = !this.isEditMode; // Toggle the edit mode
 
     if (!this.isEditMode) {
       // Optionally handle form submission or validation

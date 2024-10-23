@@ -61,14 +61,13 @@
           </div>
       
           <!-- Display added emails -->
-          <div *ngIf="emails.length > 0">
-            <h5>Added Emails:</h5>
+          <!-- <div *ngIf="emails.length > 0">
             <ul>
               <li *ngFor="let email of emails; let i = index">
                 {{ email }} <button (click)="removeEmail(i)">Remove</button>
               </li>
             </ul>
-          </div>
+          </div> -->
         </div>
       
         <button class="add-email-button" 

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from 'src/app/Service/data.service';
 import { ModalService } from 'src/app/Service/modal.service';
 import { StepTwoDateComponent } from '../step-two-date/step-two-date.component';
+
 @Component({
   selector: 'app-step-one-vehicle',
   templateUrl: './step-one-vehicle.component.html',
@@ -14,6 +15,7 @@ export class StepOneVehicleComponent implements OnInit {
   vehicles: any[] = [];
   filteredVehicles: any[] = [];
   selectedVehicles: string[] = [];
+  selectedReportTypes: string[] = []; // Store selected report types
 
   showVehicleList = false;
   isButtonVisible = false;
@@ -32,7 +34,7 @@ export class StepOneVehicleComponent implements OnInit {
       vehicle: [false],
       trip: [false],
       driving: [false],
-      email: ['', [Validators.required, Validators.email]],
+      email: [''],
       vehicleSearch: [''],
       branch: [this.selectedBranch]
     });
@@ -44,43 +46,56 @@ export class StepOneVehicleComponent implements OnInit {
       this.filteredVehicles = this.vehicles;
     });
 
+    this.reportForm.valueChanges.subscribe(() => {
+      this.updateSelectedReportTypes(); // Update report types on form changes
+    });
+
     this.reportForm.get('vehicle')?.valueChanges.subscribe(value => {
       this.showVehicleList = value;
     });
 
     this.reportForm.get('vehicleSearch')?.valueChanges.subscribe(value => {
-      console.log('Search input changed:', value);
       this.filteredVehicleList();
     });
 
     this.reportForm.get('branch')?.valueChanges.subscribe(value => {
-      console.log('Branch selection changed:', value);
       this.filteredVehicleList();
     });
   }
 
-  
+  // Function to update selected report types based on the form values
+  updateSelectedReportTypes(): void {
+    this.selectedReportTypes = [];
+
+    if (this.reportForm.get('fleet')?.value) {
+      this.selectedReportTypes.push('Fleet');
+    }
+    if (this.reportForm.get('vehicle')?.value) {
+      this.selectedReportTypes.push('Vehicle');
+    }
+    if (this.reportForm.get('trip')?.value) {
+      this.selectedReportTypes.push('Trip');
+    }
+    if (this.reportForm.get('driving')?.value) {
+      this.selectedReportTypes.push('Driving');
+    }
+  }
 
   filteredVehicleList(): void {
-    console.log('Vehicles for filtering:', this.vehicles);  // Check vehicle structure
-
     const vehicleSearch = this.reportForm.get('vehicleSearch')?.value.toLowerCase();
     const branch = this.reportForm.get('branch')?.value;
 
     this.filteredVehicles = this.vehicles.filter(vehicle => {
-      console.log('Vehicle object:', vehicle);  // Check vehicle properties
       const matchesBranch = branch === 'All Vehicles' || vehicle.branch.toLowerCase() === branch.toLowerCase();
       const matchesSearch = !vehicleSearch || vehicle.branch.toLowerCase().includes(vehicleSearch);
       return matchesBranch && matchesSearch;
     });
   }
 
-
   onVehicleSelect(vehicle: any): void {
     vehicle.selected = !vehicle.selected;
     if (vehicle.selected) {
       this.selectedVehicles.push(vehicle.vin);
-      console.log(this.selectedVehicles)
     } else {
       this.selectedVehicles = this.selectedVehicles.filter(vin => vin !== vehicle.vin);
     }
@@ -102,7 +117,7 @@ export class StepOneVehicleComponent implements OnInit {
     if (emailControl?.valid && this.emails.length < 5) {
       this.emails.push(emailControl.value);
       emailControl.reset();
-      emailControl.markAsUntouched(); 
+      emailControl.markAsUntouched();
     }
   }
 
@@ -113,18 +128,11 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   isNextButtonEnabled(): boolean {
-    console.log(this.emails.length);
-    
-    return this.reportForm.valid && this.emails.length > 0;
-    
+    return this.selectedReportTypes.length > 0 && this.selectedVehicles.length > 0 && this.emails.length > 0;
   }
 
   onNext(): void {
     if (this.isNextButtonEnabled()) {
-      console.log('Proceeding to the next step with form data:', this.reportForm.value);
-      console.log('Selected emails:', this.emails);
-      console.log('Selected vehicles:', this.selectedVehicles);
-
       const formData = {
         fleet: this.reportForm.get('fleet')?.value,
         vehicle: this.reportForm.get('vehicle')?.value,
@@ -134,11 +142,10 @@ export class StepOneVehicleComponent implements OnInit {
         vehicleSearch: this.reportForm.get('vehicleSearch')?.value,
         branch: this.reportForm.get('branch')?.value,
         selectedVehicles: this.selectedVehicles,
-        reportType: this.reportForm.get('reportType')?.value 
-    };
+        reportTypes: this.selectedReportTypes // Include the selected report types here
+      };
 
-    localStorage.setItem('stepOneData', JSON.stringify(formData));
-
+      localStorage.setItem('stepOneData', JSON.stringify(formData));
       this.modalService.stepTwoFortm();
       this.dialogRef.close();
     }
