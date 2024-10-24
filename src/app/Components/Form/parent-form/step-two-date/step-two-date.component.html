@@ -1,29 +1,26 @@
 <div class="schedule-reports-modal">
     <h2 mat-dialog-title>Schedule Reports 
-        <button mat-icon-button class="edit-button" (click)="toggleEdit()">
-            <mat-icon>{{ isEditMode ? 'check' : 'edit' }}</mat-icon>
+        <button class="close-btn" (click)="onCancel()">
+            <mat-icon>X</mat-icon>
         </button>
     </h2>
     <mat-dialog-content>
         <form [formGroup]="scheduleForm">
             <div class="form-row">
                 <label>Report Types</label>
-                <mat-form-field>
-                    <input matInput formControlName="reportTypes"  [disabled]="!isEditMode">
-                </mat-form-field>
+                <h3>{{ reportTypes }}</h3>
             </div>
+
             <div class="form-row">
                 <label>Vehicles</label>
-                <mat-form-field>
-                    <input matInput formControlName="vehicles">
-                </mat-form-field>
+                <h3>{{ vehicles }}</h3>
             </div>
+
             <div class="form-row">
                 <label>Mailed to</label>
-                <mat-form-field>
-                    <input matInput formControlName="mailedTo">
-                </mat-form-field>
+                <h3>{{ mailedTo }}</h3>
             </div>
+
             <div class="form-row time-row">
                 <label>Set Time</label>
                 <div class="time-input">
@@ -39,13 +36,21 @@
                     <mat-button-toggle value="AM">AM</mat-button-toggle>
                     <mat-button-toggle value="PM">PM</mat-button-toggle>
                 </mat-button-toggle-group>
+                <div *ngIf="scheduleForm.get('setTime').invalid && scheduleForm.get('setTime').touched">
+                    <small *ngIf="scheduleForm.get('setTime').hasError('required')">Set time is required.</small>
+                    <small *ngIf="scheduleForm.get('setTime').hasError('invalidTime')">Invalid time format.</small>
+                </div>
             </div>
+
             <div class="form-row">
                 <label>Select Time Interval</label>
                 <mat-slide-toggle formControlName="skipWeekends">Skip Weekends</mat-slide-toggle>
             </div>
             <mat-radio-group formControlName="timeInterval" class="time-interval-group">
                 <mat-radio-button *ngFor="let interval of timeIntervals" [value]="interval">{{interval}}</mat-radio-button>
+                <div *ngIf="scheduleForm.get('timeInterval').invalid && scheduleForm.get('timeInterval').touched">
+                    <small *ngIf="scheduleForm.get('timeInterval').hasError('required')">Please select a time interval.</small>
+                </div>
             </mat-radio-group>
 
             <ng-container [ngSwitch]="scheduleForm.get('timeInterval')?.value">
@@ -55,6 +60,9 @@
                             (click)="scheduleForm.patchValue({weeklyDay: day})">
                         {{day}}
                     </button>
+                    <div *ngIf="scheduleForm.get('weeklyDay').invalid && scheduleForm.get('weeklyDay').touched">
+                        <small *ngIf="scheduleForm.get('weeklyDay').hasError('required')">Weekly day is required.</small>
+                    </div>
                 </div>
                 <div *ngSwitchCase="'Every 2 weeks'" class="weekday-selector">
                     <button mat-button *ngFor="let day of weekDays"
@@ -69,6 +77,11 @@
                             (click)="scheduleForm.patchValue({monthlyDay: day})">
                         {{day}}
                     </button>
+                    <div *ngIf="scheduleForm.get('monthlyDay').invalid && scheduleForm.get('monthlyDay').touched">
+                        <small *ngIf="scheduleForm.get('monthlyDay').hasError('required')">Monthly day is required.</small>
+                        <small *ngIf="scheduleForm.get('monthlyDay').hasError('min')">Minimum day is 1.</small>
+                        <small *ngIf="scheduleForm.get('monthlyDay').hasError('max')">Maximum day is 28.</small>
+                    </div>
                 </div>
                 <div *ngSwitchCase="'Quarterly'" class="quarterly-selector">
                     <mat-radio-group formControlName="quarterlyOption">
@@ -99,6 +112,6 @@
     </mat-dialog-content>
     <mat-dialog-actions align="end">
         <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-raised-button color="primary" (click)="onNext()">Next</button>
+        <button mat-raised-button color="primary" (click)="onNext()" [disabled]="scheduleForm.invalid">Next</button>
     </mat-dialog-actions>
 </div>

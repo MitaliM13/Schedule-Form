@@ -8,9 +8,9 @@
   max-height: 80vh; 
   max-width: 530px;
   border-radius: 10px;
-  overflow-y: auto; /* Allow vertical scrolling */
+  overflow-y: auto; 
   white-space: nowrap;
-  scroll-behavior: smooth; /* Optional for smooth scrolling */
+  scroll-behavior: smooth; 
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 

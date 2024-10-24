@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ModalService } from 'src/app/Service/modal.service';
 import { StepOneVehicleComponent } from './step-one-vehicle/step-one-vehicle.component';
 import { StepTwoDateComponent } from './step-two-date/step-two-date.component';
+import { StepThreeConfirmComponent } from './step-three-confirm/step-three-confirm.component';
 
 @Component({
   selector: 'app-parent-form',
@@ -44,6 +45,8 @@ export class ParentFormComponent implements OnInit {
       this.dialog.open(StepOneVehicleComponent)
     } else if (step === 2){
       this.dialog.open(StepTwoDateComponent)
+    } else if (step === 3){
+      this.dialog.open(StepThreeConfirmComponent)
     }
   }
 }

@@ -1,92 +1,82 @@
 <div class="schedule-container">
-    <div class="heading">
-      <h2 style="color: #242424; font-size: large">Schedule Reports</h2>
-      <div>
-        <button class="x" (click)="onCancel()">X</button>
-      </div>
-    </div>
-  
-    <div [formGroup]="reportForm" id="formDiv">
-      <section class="selectOption">
-        <h4 style="color: #242424; font-size: medium">Select Required Report Types</h4>
-        <p><mat-checkbox formControlName="fleet">Fleet Wise Report</mat-checkbox></p>
-        <p><mat-checkbox formControlName="vehicle">Vehicle Wise Report</mat-checkbox></p>
-        <p><mat-checkbox formControlName="trip">Trip Wise Report</mat-checkbox></p>
-        <p><mat-checkbox formControlName="driving">Driving Scorecard Report</mat-checkbox></p>
-      </section>
-  
-      <div *ngIf="showVehicleList">
-        <h5 style="color: #242424">Select Vehicles</h5>
-        <div class="vehicle-container">
-          <div id="vehicleFilters">
-            <div id="placeFilter">
-              <select formControlName="branch">
-                <option value="All Vehicles">All Vehicles</option>
-                <option value="mumbai">Mumbai</option>
-                <option value="thane">Thane</option>
-                <option value="pune">Pune</option>
-              </select>
-            </div>
-            <div id="searchVehicle">
-              <input type="text" formControlName="vehicleSearch" placeholder="Search Vehicles" />
-            </div>
-          </div>
-          <div *ngFor="let vehicle of filteredVehicles" class="vehicle-list">
-            <mat-checkbox (change)="onVehicleSelect(vehicle)">
-              <p><b>{{ vehicle.registration_number }}</b></p>
-              <p>VIN: {{ vehicle.vin }}</p>
-              <p>{{ vehicle.lob_name }}</p>
-            </mat-checkbox>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Email input section -->
-      <section class="email-section">
-        <div class="email-container">
-          <h4>Enter email ids</h4>
-          
-          <div class="email-input-container" *ngIf="isButtonVisible">
-            <input type="email" formControlName="email" placeholder="Enter email" />
-            
-            <!-- Validation messages -->
-            <div *ngIf="reportForm.get('email')?.invalid && reportForm.get('email')?.touched" class="error-messages">
-              <span *ngIf="reportForm.get('email')?.hasError('required')">Email is required.</span>
-              <span *ngIf="reportForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
-            </div>
-      
-            <button class="add-email-button" 
-                    [disabled]="!reportForm.get('email')?.valid || emails.length >= 5" 
-                    (click)="addEmail()">Add</button>
-          </div>
-      
-          <!-- Display added emails -->
-          <!-- <div *ngIf="emails.length > 0">
-            <ul>
-              <li *ngFor="let email of emails; let i = index">
-                {{ email }} <button (click)="removeEmail(i)">Remove</button>
-              </li>
-            </ul>
-          </div> -->
-        </div>
-      
-        <button class="add-email-button" 
-                [disabled]="emails.length >= 5" 
-                (click)="onButtonClickVisible()">{{ buttonValue }}</button>
-      </section>
-      
-    </div> <!-- Closing formGroup div -->
-  
-    <!-- Email list display -->
-    <div class="email-textarea">
-      <div *ngFor="let email of emails; let i = index" class="email-item">
-        <span>{{ email }}</span>
-        <button class="remove-button" (click)="removeEmail(i)">X</button>
-      </div>
-    </div>
-  
-    <div class="button-container">
-      <button class="cancel-button" (click)="onCancel()">Cancel</button>
-      <button class="next-button" [disabled]="!isNextButtonEnabled()" (click)="onNext()">Next ></button>
+  <div class="heading">
+    <h2 style="color: #242424; font-size: large">Schedule Reports</h2>
+    <div>
+      <button class="x" (click)="onClose()">X</button>
     </div>
   </div>
+
+  <div [formGroup]="reportForm" id="formDiv">
+    <section class="selectOption">
+      <h4 style="color: #242424; font-size: medium">Select Required Report Types</h4>
+      
+      <div *ngFor="let reportType of reportTypes">
+        <p>
+          <mat-checkbox [formControlName]="reportType.controlName">{{ reportType.name }}</mat-checkbox>
+        </p>
+      </div>
+      
+      <div *ngIf="!isAnyReportTypeSelected()" class="error-messages">
+        <span>Select at least one report type.</span>
+      </div>
+    </section>
+
+    <div *ngIf="showVehicleList">
+      <h5 style="color: #242424">Select Vehicles</h5>
+      <div class="vehicle-container">
+        <div id="vehicleFilters">
+          <div id="placeFilter">
+            <select formControlName="branch">
+              <option *ngFor="let branch of branches" [value]="branch">{{ branch }}</option>
+            </select>
+          </div>
+          <div id="searchVehicle">
+            <input type="text" formControlName="vehicleSearch" placeholder="Search Vehicles" />
+          </div>
+        </div>
+        <div *ngFor="let vehicle of filteredVehicles" class="vehicle-list">
+          <mat-checkbox (change)="onVehicleSelect(vehicle)">
+            <p><b>{{ vehicle.registration_number }}</b></p>
+            <p>VIN: {{ vehicle.vin }}</p>
+            <p>{{ vehicle.lob_name }}</p>
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+    <section class="email-section">
+      <div class="email-container">
+        <h4>Enter email ids</h4>
+        
+        <div class="email-input-container" *ngIf="isButtonVisible">
+          <input type="email" formControlName="email" placeholder="Enter email" />
+          
+          <div *ngIf="reportForm.get('email')?.invalid && reportForm.get('email')?.touched" class="error-messages">
+            <span *ngIf="reportForm.get('email')?.hasError('required')">Email is required.</span>
+            <span *ngIf="reportForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
+          </div>
+
+          <button class="add-email-button" 
+                  [disabled]="!reportForm.get('email')?.valid || emails.length >= 5" 
+                  (click)="addEmail()">Add</button>
+        </div>
+      </div>
+
+      <button class="add-email-button" 
+              [disabled]="emails.length >= 5" 
+              (click)="onButtonClickVisible()">{{ buttonValue }}</button>
+    </section>
+  </div>
+
+  <div class="email-textarea">
+    <div *ngFor="let email of emails; let i = index" class="email-item">
+      <span>{{ email }}</span>
+      <button class="remove-button" (click)="removeEmail(i)">X</button>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button class="cancel-button" (click)="onCancel()">Cancel</button>
+    <button class="next-button" [disabled]="!isNextButtonEnabled()" (click)="onNext()">Next</button>
+  </div>
+</div>
