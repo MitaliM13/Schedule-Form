@@ -7,19 +7,43 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./step-three-confirm.component.css']
 })
 export class StepThreeConfirmComponent implements OnInit {
-  stepOneData: any = {};  
-  stepTwoData: any = {}; 
+  stepTwoData: any = {};
+  stepOneData: any = {};
+  finalData: any = {};
 
-  constructor(public dialog: MatDialogRef<StepThreeConfirmComponent>){}
-
+  constructor(public dialog: MatDialogRef<StepThreeConfirmComponent>) {}
 
   ngOnInit(): void {
-    this.stepOneData = JSON.parse(localStorage.getItem('stepOneData') || '{}');
-    this.stepTwoData = JSON.parse(localStorage.getItem('stepTwoData') || '{}');
-}
+    this.loadFinalData();
+  }
+
+  loadFinalData(): void {
+    const stepOneData = localStorage.getItem('stepOneData');
+    const stepTwoData = localStorage.getItem('stepTwoData');
+
+    if (stepOneData) {
+      try {
+        this.stepOneData = JSON.parse(stepOneData);
+      } catch (error) {
+        console.error("Error parsing stepOneData:", error);
+      }
+    }
+
+    if (stepTwoData) {
+      try {
+        this.stepTwoData = JSON.parse(stepTwoData);
+      } catch (error) {
+        console.error("Error parsing stepTwoData:", error);
+      }
+    }
+
+    this.finalData = {
+      stepOne: this.stepOneData,
+      stepTwo: this.stepTwoData,
+    };
+  }
 
   onConfirm(): void {
-    this.dialog.close()
-    localStorage.clear()    
+    this.dialog.close('confirmed'); 
   }
 }

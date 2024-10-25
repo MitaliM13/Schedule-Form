@@ -93,7 +93,7 @@ export class StepTwoDateComponent implements OnInit {
       };
 
       localStorage.setItem('stepTwoData', JSON.stringify(form));
-      this.modal.stepTwoFortm();
+      this.modal.stepTwoForm();
       this.dialogRef.close();
     }
   }

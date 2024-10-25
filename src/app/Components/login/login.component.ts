@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
-  private validUsers = [
+  private validUsers = [ 
     { username: 'admin1', password: 'admin1' },
     { username: 'admin2', password: 'admin2' },
     { username: 'admin3', password: 'admin3' },
@@ -30,8 +30,8 @@ export class LoginComponent implements OnInit {
   }
 
   private handleSessionOnReload(): void {
-    if (sessionStorage.getItem('isLoggedIn') === 'true') {
-      sessionStorage.removeItem('isLoggedIn');
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      localStorage.removeItem('isLoggedIn');
       this.router.navigate(['/login']);
     }
   }
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
     );
 
     if (userExists) {
-      sessionStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('isLoggedIn', 'true');
       this.router.navigate(['/form']);
     } else {
       alert('Invalid Username or Password. Please try again!');

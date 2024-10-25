@@ -9,7 +9,7 @@ export class ModalService {
   public step = new BehaviorSubject<number>(1)
   currentStep$ = this.step.asObservable()
 
-  stepTwoFortm(){
+  stepTwoForm(){
     const formTwo = this.step.value + 1
     this.step.next(formTwo)
   }

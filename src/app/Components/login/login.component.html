@@ -10,7 +10,7 @@
           class="form-control"
           [ngClass]="{'is-invalid': isFieldInvalid('username')}"
           placeholder="Enter your username"
-        />
+        /> 
         <div *ngIf="isFieldInvalid('username')" class="invalid-feedback">
           <small *ngIf="loginForm.get('username')?.hasError('required')">Username is required.</small>
           <small *ngIf="loginForm.get('username')?.hasError('minlength')">Username must be at least 3 characters long.</small>

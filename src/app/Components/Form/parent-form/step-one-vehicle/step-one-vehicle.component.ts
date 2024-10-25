@@ -15,20 +15,19 @@ export class StepOneVehicleComponent implements OnInit {
   filteredVehicles: any[] = [];
   selectedVehicles: string[] = [];
   selectedReportTypes: string[] = []; 
+  branchName: string[] = ['All Vehicles'];
   showVehicleList = false;
   isButtonVisible = false;
   buttonValue = '+Add';
   reportForm: FormGroup;
-  selectedBranch: string = 'All Vehicles';
   
+
   reportTypes = [
     { name: 'Fleet Wise Report', controlName: 'fleet' },
     { name: 'Vehicle Wise Report', controlName: 'vehicle' },
     { name: 'Trip Wise Report', controlName: 'trip' },
     { name: 'Driving Scorecard Report', controlName: 'driving' },
   ];
-
-  branches = ['All Vehicles', 'Mumbai', 'Thane', 'Pune'];
 
   constructor(
     private fb: FormBuilder,
@@ -43,12 +42,12 @@ export class StepOneVehicleComponent implements OnInit {
       driving: [false],
       email: ['', [Validators.email, Validators.required]],
       vehicleSearch: [''],
-      branch: [this.selectedBranch]
+      branch: ['All Vehicles'] 
     });
   }
 
   ngOnInit(): void {
-    this.loadVehicles();
+    this.loadVehicles(); 
     this.setupFormListeners();
   }
 
@@ -56,8 +55,24 @@ export class StepOneVehicleComponent implements OnInit {
     this.dataService.getData().subscribe(data => {
       this.vehicles = data.vehicles;
       this.filteredVehicles = this.vehicles;
+  
+      this.branchName = this.getUniqueBranches(this.vehicles);
+      console.log(this.branchName); 
     });
   }
+  
+  getUniqueBranches(vehicles: any[]): string[] {
+    const uniqueBranches: string[] = [];
+    
+    vehicles.forEach(vehicle => {
+      if (!uniqueBranches.includes(vehicle.branch)) {
+        uniqueBranches.push(vehicle.branch);
+      }
+    });
+  
+    return ['All Vehicles', ...uniqueBranches];
+  }
+  
 
   setupFormListeners(): void {
     this.reportForm.valueChanges.subscribe(() => {
@@ -88,7 +103,6 @@ export class StepOneVehicleComponent implements OnInit {
     return this.reportTypes.some(type => this.reportForm.get(type.controlName)?.value);
   }
 
-
   filteredVehicleList(): void {
     const vehicleSearch = this.reportForm.get('vehicleSearch')?.value?.trim().toLowerCase() || '';
     const branch = this.reportForm.get('branch')?.value;
@@ -98,8 +112,7 @@ export class StepOneVehicleComponent implements OnInit {
         const matchesSearch = vehicle.vin.toLowerCase().includes(vehicleSearch);
         return matchesBranch && matchesSearch;
     });
-}
-
+  }
 
   onVehicleSelect(vehicle: any): void {
     vehicle.selected = !vehicle.selected;
@@ -115,7 +128,7 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.modalService.stepTwoFortm();
+    this.modalService.stepTwoForm();
     this.dialogRef.close();
     this.reportForm.reset();
     this.selectedVehicles = []; 
@@ -163,7 +176,7 @@ export class StepOneVehicleComponent implements OnInit {
       };
 
       localStorage.setItem('stepOneData', JSON.stringify(formData));
-      this.modalService.stepTwoFortm();
+      this.modalService.stepTwoForm();
       this.dialogRef.close();
     }
   }

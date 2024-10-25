@@ -24,13 +24,15 @@
             <div class="form-row time-row">
                 <label>Set Time</label>
                 <div class="time-input">
-                    <button mat-icon-button (click)="incrementTime()">
-                        <mat-icon>arrow_drop_up</mat-icon>
-                    </button>
                     <input matInput formControlName="setTime" type="text">
-                    <button mat-icon-button (click)="decrementTime()">
-                        <mat-icon>arrow_drop_down</mat-icon>
-                    </button>
+                    <div>                    
+                        <button mat-icon-button (click)="incrementTime()">
+                            <mat-icon>arrow_drop_up</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="decrementTime()">
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                    </div>
                 </div>
                 <mat-button-toggle-group formControlName="timeFormat">
                     <mat-button-toggle value="AM">AM</mat-button-toggle>
@@ -47,9 +49,11 @@
                 <mat-slide-toggle formControlName="skipWeekends">Skip Weekends</mat-slide-toggle>
             </div>
             <mat-radio-group formControlName="timeInterval" class="time-interval-group">
-                <mat-radio-button *ngFor="let interval of timeIntervals" [value]="interval">{{interval}}</mat-radio-button>
+                <mat-radio-button *ngFor="let interval of timeIntervals" [value]="interval">
+                    {{ interval }}
+                </mat-radio-button>
                 <div *ngIf="scheduleForm.get('timeInterval').invalid && scheduleForm.get('timeInterval').touched">
-                    <small *ngIf="scheduleForm.get('timeInterval').hasError('required')">Please select a time interval.</small>
+                    <small>Please select a time interval.</small>
                 </div>
             </mat-radio-group>
 
@@ -57,28 +61,28 @@
                 <div *ngSwitchCase="'Weekly'" class="weekday-selector">
                     <button mat-button *ngFor="let day of weekDays"
                             [class.selected]="scheduleForm.get('weeklyDay')?.value === day"
-                            (click)="scheduleForm.patchValue({weeklyDay: day})">
-                        {{day}}
+                            (click)="scheduleForm.patchValue({ weeklyDay: day })">
+                        {{ day }}
                     </button>
                     <div *ngIf="scheduleForm.get('weeklyDay').invalid && scheduleForm.get('weeklyDay').touched">
-                        <small *ngIf="scheduleForm.get('weeklyDay').hasError('required')">Weekly day is required.</small>
+                        <small>Weekly day is required.</small>
                     </div>
                 </div>
                 <div *ngSwitchCase="'Every 2 weeks'" class="weekday-selector">
                     <button mat-button *ngFor="let day of weekDays"
                             [class.selected]="scheduleForm.get('weeklyDay')?.value === day"
-                            (click)="scheduleForm.patchValue({weeklyDay: day})">
-                        {{day}}
+                            (click)="scheduleForm.patchValue({ weeklyDay: day })">
+                        {{ day }}
                     </button>
                 </div>
                 <div *ngSwitchCase="'Monthly'" class="monthly-selector">
                     <button mat-button *ngFor="let day of monthDays"
                             [class.selected]="scheduleForm.get('monthlyDay')?.value === day"
-                            (click)="scheduleForm.patchValue({monthlyDay: day})">
-                        {{day}}
+                            (click)="scheduleForm.patchValue({ monthlyDay: day })">
+                        {{ day }}
                     </button>
                     <div *ngIf="scheduleForm.get('monthlyDay').invalid && scheduleForm.get('monthlyDay').touched">
-                        <small *ngIf="scheduleForm.get('monthlyDay').hasError('required')">Monthly day is required.</small>
+                        <small>Monthly day is required.</small>
                         <small *ngIf="scheduleForm.get('monthlyDay').hasError('min')">Minimum day is 1.</small>
                         <small *ngIf="scheduleForm.get('monthlyDay').hasError('max')">Maximum day is 28.</small>
                     </div>
@@ -86,7 +90,7 @@
                 <div *ngSwitchCase="'Quarterly'" class="quarterly-selector">
                     <mat-radio-group formControlName="quarterlyOption">
                         <mat-radio-button *ngFor="let option of quarterlyOptions"
-                                         [value]="option">{{option}}</mat-radio-button>
+                                         [value]="option">{{ option }}</mat-radio-button>
                     </mat-radio-group>
                     <mat-form-field *ngIf="scheduleForm.get('quarterlyOption')?.value === 'Custom'">
                         <input matInput [matDatepicker]="quarterlyPicker" formControlName="customDate"
@@ -98,7 +102,7 @@
                 <div *ngSwitchCase="'Yearly'" class="yearly-selector">
                     <mat-radio-group formControlName="yearlyOption">
                         <mat-radio-button *ngFor="let option of yearlyOptions"
-                                         [value]="option">{{option}}</mat-radio-button>
+                                         [value]="option">{{ option }}</mat-radio-button>
                     </mat-radio-group>
                     <mat-form-field *ngIf="scheduleForm.get('yearlyOption')?.value === 'Custom'">
                         <input matInput [matDatepicker]="yearlyPicker" formControlName="customDate"
