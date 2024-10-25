@@ -15,8 +15,6 @@ export class ParentFormComponent implements OnInit {
   data: any[] = [];
   errorMessage: string = '';
   currentStep: number = 1;
-  finalData: any;
-  isScheduleConfirmed: boolean = false; 
 
   constructor(private dataService: DataService, private dialog: MatDialog, private modal: ModalService) {}
 
@@ -24,9 +22,9 @@ export class ParentFormComponent implements OnInit {
     this.fetchData();
 
     this.modal.currentStep$.subscribe(step => {
-      this.currentStep = step;
-      this.openDialog(step);
-    });
+      this.currentStep = step
+      this.openDialog(step)
+    })
   }
 
   fetchData(): void {
@@ -43,18 +41,12 @@ export class ParentFormComponent implements OnInit {
   }
 
   openDialog(step: number) {
-    if (step === 1) {
-      this.dialog.open(StepOneVehicleComponent);
-    } else if (step === 2) {
-      this.dialog.open(StepTwoDateComponent);
-    } else if (step === 3) {
-      const dialogRef = this.dialog.open(StepThreeConfirmComponent);
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === 'confirmed') { 
-          this.isScheduleConfirmed = true; 
-        }
-      });
+    if(step === 1){
+      this.dialog.open(StepOneVehicleComponent)
+    } else if (step === 2){
+      this.dialog.open(StepTwoDateComponent)
+    } else if (step === 3){
+      this.dialog.open(StepThreeConfirmComponent)
     }
   }
 }

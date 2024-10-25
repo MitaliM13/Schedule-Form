@@ -27,7 +27,7 @@
         <div id="vehicleFilters">
           <div id="placeFilter">
             <select formControlName="branch">
-              <option *ngFor="let branch of branchName" [value]="branch">{{ branch }}</option>
+              <option *ngFor="let branch of branches" [value]="branch">{{ branch }}</option>
             </select>
           </div>
           <div id="searchVehicle">
@@ -77,6 +77,6 @@
 
   <div class="button-container">
     <button class="cancel-button" (click)="onCancel()">Cancel</button>
-    <button class="next-button" [disabled]="!isNextButtonEnabled()" (click)="onNext()">Next ></button>
+    <button class="next-button" [disabled]="!isNextButtonEnabled()" (click)="onNext()">Next</button>
   </div>
 </div>

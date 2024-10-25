@@ -73,7 +73,7 @@ import {
     NgArrayPipesModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
-    NgxMatNativeDateModule
+    NgxMatNativeDateModule,
   ],
   exports: [MatStepperModule],
   providers: [DataService],

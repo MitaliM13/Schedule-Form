@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef,MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DataService } from 'src/app/Service/data.service';
 import { ModalService } from 'src/app/Service/modal.service';
+import { StepTwoDateComponent } from '../step-two-date/step-two-date.component';
 
 @Component({
   selector: 'app-step-one-vehicle',
@@ -15,13 +16,12 @@ export class StepOneVehicleComponent implements OnInit {
   filteredVehicles: any[] = [];
   selectedVehicles: string[] = [];
   selectedReportTypes: string[] = []; 
-  branchName: string[] = ['All Vehicles'];
   showVehicleList = false;
   isButtonVisible = false;
   buttonValue = '+Add';
   reportForm: FormGroup;
+  selectedBranch: string = 'All Vehicles';
   
-
   reportTypes = [
     { name: 'Fleet Wise Report', controlName: 'fleet' },
     { name: 'Vehicle Wise Report', controlName: 'vehicle' },
@@ -29,11 +29,14 @@ export class StepOneVehicleComponent implements OnInit {
     { name: 'Driving Scorecard Report', controlName: 'driving' },
   ];
 
+  branches = ['All Vehicles', 'Mumbai', 'Thane', 'Pune'];
+
   constructor(
     private fb: FormBuilder,
     private modalService: ModalService,
     private dataService: DataService,
-    private dialogRef: MatDialogRef<StepOneVehicleComponent>
+    private dialogRef: MatDialogRef<StepOneVehicleComponent>,
+    private matDialog: MatDialog
   ) {
     this.reportForm = this.fb.group({
       fleet: [true],
@@ -42,12 +45,12 @@ export class StepOneVehicleComponent implements OnInit {
       driving: [false],
       email: ['', [Validators.email, Validators.required]],
       vehicleSearch: [''],
-      branch: ['All Vehicles'] 
+      branch: [this.selectedBranch]
     });
   }
 
   ngOnInit(): void {
-    this.loadVehicles(); 
+    this.loadVehicles();
     this.setupFormListeners();
   }
 
@@ -55,24 +58,8 @@ export class StepOneVehicleComponent implements OnInit {
     this.dataService.getData().subscribe(data => {
       this.vehicles = data.vehicles;
       this.filteredVehicles = this.vehicles;
-  
-      this.branchName = this.getUniqueBranches(this.vehicles);
-      console.log(this.branchName); 
     });
   }
-  
-  getUniqueBranches(vehicles: any[]): string[] {
-    const uniqueBranches: string[] = [];
-    
-    vehicles.forEach(vehicle => {
-      if (!uniqueBranches.includes(vehicle.branch)) {
-        uniqueBranches.push(vehicle.branch);
-      }
-    });
-  
-    return ['All Vehicles', ...uniqueBranches];
-  }
-  
 
   setupFormListeners(): void {
     this.reportForm.valueChanges.subscribe(() => {
@@ -103,6 +90,7 @@ export class StepOneVehicleComponent implements OnInit {
     return this.reportTypes.some(type => this.reportForm.get(type.controlName)?.value);
   }
 
+
   filteredVehicleList(): void {
     const vehicleSearch = this.reportForm.get('vehicleSearch')?.value?.trim().toLowerCase() || '';
     const branch = this.reportForm.get('branch')?.value;
@@ -112,7 +100,8 @@ export class StepOneVehicleComponent implements OnInit {
         const matchesSearch = vehicle.vin.toLowerCase().includes(vehicleSearch);
         return matchesBranch && matchesSearch;
     });
-  }
+}
+
 
   onVehicleSelect(vehicle: any): void {
     vehicle.selected = !vehicle.selected;
@@ -142,12 +131,26 @@ export class StepOneVehicleComponent implements OnInit {
 
   addEmail(): void {
     const emailControl = this.reportForm.get('email');
-    if (emailControl?.valid && !this.emails.includes(emailControl.value) && this.emails.length < 5) {
+    
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (
+      emailControl?.valid && 
+      emailControl.value && 
+      emailPattern.test(emailControl.value) && 
+      !this.emails.includes(emailControl.value) && 
+      this.emails.length < 5
+    ) {
       this.emails.push(emailControl.value);
       emailControl.reset();
       emailControl.markAsUntouched();
+    } else {
+      if (emailControl && !emailPattern.test(emailControl.value)) {
+        emailControl.setErrors({ invalidEmail: true });
+      }
     }
   }
+  
 
   removeEmail(index: number): void {
     if (index > -1 && index < this.emails.length) {
@@ -156,10 +159,16 @@ export class StepOneVehicleComponent implements OnInit {
   }
 
   isNextButtonEnabled(): boolean {
-    return this.selectedReportTypes.length > 0 && 
-           this.selectedVehicles.length > 0 && 
-           this.emails.length > 0;
+    const isVehicleWiseReportSelected = this.reportForm.get('vehicle')?.value;
+    const isAnyReportTypeSelected = this.selectedReportTypes.length > 0;
+    const isAnyEmailEntered = this.emails.length > 0;
+    const isAnyVehicleSelected = this.selectedVehicles.length > 0;
+  
+    return isAnyReportTypeSelected && 
+           (isVehicleWiseReportSelected ? isAnyVehicleSelected : true) &&
+           isAnyEmailEntered;
   }
+  
 
   onNext(): void {
     if (this.isNextButtonEnabled()) {
@@ -175,9 +184,20 @@ export class StepOneVehicleComponent implements OnInit {
         reportTypes: this.selectedReportTypes 
       };
 
-      localStorage.setItem('stepOneData', JSON.stringify(formData));
-      this.modalService.stepTwoForm();
-      this.dialogRef.close();
+      const dialogRef = this.matDialog.open(StepTwoDateComponent, {
+        data: {
+          reports: this.selectedReportTypes, 
+          vehicle: this.selectedVehicles, 
+          email: this.emails 
+        }      
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log('Dialog closed with result:', result);
+        }
+      });
+
+      this.dialogRef.close();      
     }
   }
 }

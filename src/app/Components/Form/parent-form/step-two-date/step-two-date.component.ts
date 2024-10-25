@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalService } from 'src/app/Service/modal.service';
-
+import { StepThreeConfirmComponent } from '../step-three-confirm/step-three-confirm.component';
 @Component({
   selector: 'app-step-two-date',
   templateUrl: './step-two-date.component.html',
@@ -26,6 +26,8 @@ export class StepTwoDateComponent implements OnInit {
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<StepTwoDateComponent>,
     private modal: ModalService,
+    private dialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data: { reports: string[], vehicle: string[], email: string[] }
   ) {
     const currentDate = new Date();
     this.minDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
@@ -40,7 +42,7 @@ export class StepTwoDateComponent implements OnInit {
       quarterlyOption: ['Last day of the completed quarter', Validators.required],
       yearlyOption: ['Last day of the year', Validators.required],
       customDate: ['']
-  });
+    });
   }
 
   ngOnInit(): void {
@@ -48,25 +50,16 @@ export class StepTwoDateComponent implements OnInit {
   }
 
   loadStepOneData(): void {
-    const stepOneData = localStorage.getItem('stepOneData');
-    if (stepOneData) {
-      try {
-        const data = JSON.parse(stepOneData);
-        this.vehicles = data.selectedVehicles?.length ? data.selectedVehicles.join(', ') : '';
-        this.mailedTo = data.email?.length ? data.email.join(', ') : '';
-        this.reportTypes = data.reportTypes?.length ? data.reportTypes.join(', ') : '';
-        localStorage.removeItem('stepOneData');
-      } catch (error) {
-        console.error("Error parsing stepOneData", error);
-      }
-    }
+    // Use the injected data directly
+    this.vehicles = this.data.vehicle.length ? this.data.vehicle.join(', ') : '';
+    this.mailedTo = this.data.email.length ? this.data.email.join(', ') : '';
+    this.reportTypes = this.data.reports.length ? this.data.reports.join(', ') : '';
   }
 
   timeFormatValidator(control: AbstractControl) {
     const timePattern = /^(0?[1-9]|1[0-2]):[0-5][0-9]$/;
     return timePattern.test(control.value) ? null : { invalidTime: true };
-}
-
+  }
 
   adjustForWeekends(day: string): string {
     if (this.scheduleForm.get('skipWeekends')?.value) {
@@ -78,7 +71,7 @@ export class StepTwoDateComponent implements OnInit {
   onNext(): void {
     if (this.scheduleForm.valid) {
       const weeklyDay = this.adjustForWeekends(this.scheduleForm.get('weeklyDay')?.value);
-      const form = {
+      const formData = {
         setTime: this.scheduleForm.get('setTime')?.value,
         timeFormat: this.scheduleForm.get('timeFormat')?.value,
         timeInterval: this.scheduleForm.get('timeInterval')?.value,
@@ -92,9 +85,16 @@ export class StepTwoDateComponent implements OnInit {
         reportTypes: this.reportTypes
       };
 
-      localStorage.setItem('stepTwoData', JSON.stringify(form));
-      this.modal.stepTwoForm();
-      this.dialogRef.close();
+      const dialogRef = this.dialog.open(StepThreeConfirmComponent, {
+        width: '400px',
+        data: formData 
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('Step Three dialog was closed', result);
+      });
+
+      this.dialogRef.close(); 
     }
   }
 
